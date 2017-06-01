@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Secrets</title>
+        {% load staticfiles %}
+        <link rel="stylesheet" href="{% static 'dojoSecrets/secrets.css' %}">
+    </head>
+    <body>
+        <div id="wrapper">
+            <div id="header">
+                <!-- <a href="/"><img id="dojo"></a> -->
+                <div id="topRight">
+                    <h2>Welcome, {{ request.session.name }}!</h2>
+                    <form id="logoff" action="/logoff" method="post">
+                        {% csrf_token %}
+                        <input id="logoffButton" type="submit" name="logoff" value="Log Out">
+                    </form>
+                </div> <!-- topRight -->
+            </div> <!-- header -->
+            {% if messages %}
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            {% endif %}
+            <a href="/secrets">Go back</a>
+            <h1>Most Popular Secrets...</h1>
+            {% for secret in secrets %}
+                <p>{{ secret.info }} - {{ secret.created_at }} {{ secret.like_count}} likes</p>
+                <form action="/like/{{secret.id}}/{{secret.user.id}}/popular" method="post">
+                    {% csrf_token %}
+                    <input type="submit" name="submit" value="Like">
+                </form>
+                {% if request.session.id ==  secret.user.id %}
+                    <form action="/delete/{{secret.id}}/popular" method="post">
+                        {% csrf_token %}
+                        <input type="submit" name="submit" value="Delete">
+                    </form>
+                {% endif %}
+            {% endfor %}
+        </div> <!-- wrapper -->
+    </body>
+</html>
